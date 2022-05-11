@@ -2,3 +2,5 @@
 statics-py.iml
 
 venv
+
+__pycache__/
