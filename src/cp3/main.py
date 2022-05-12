@@ -1,3 +1,4 @@
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
@@ -36,3 +37,32 @@ if __name__ == '__main__':
     print(np.corrcoef(en_scores_10, ma_scores_10))
     print(scores_10_df.corr())
 
+    en_scores = np.array(df[LABEL_ENGLISH])
+    ma_scores = np.array(df[LABEL_MATH])
+
+    poly_fit = np.polyfit(en_scores, ma_scores, 1)
+    poly_1d = np.poly1d(poly_fit)
+
+    xs = np.linspace(en_scores.min(), en_scores.max())
+    ys = poly_1d(xs)
+
+    fig = plt.figure(figsize=(8, 8))
+    ax = fig.add_subplot(111)
+
+    ax.set_xlabel(LABEL_ENGLISH)
+    ax.set_ylabel(LABEL_MATH)
+    ax.scatter(en_scores, ma_scores, label='点数')
+    ax.plot(xs, ys, color='gray', label=f'{poly_fit[1]:.2f}+{poly_fit[0]:.2f}x')
+    ax.legend(loc='upper left')
+
+    plt.show()
+
+    fig = plt.figure(figsize=(10, 8))
+    ax = fig.add_subplot(111)
+
+    c = ax.hist2d(en_scores, ma_scores, bins=[9, 8], range=[(35, 80), (55, 95)])
+    ax.set_xticks(c[1])
+    ax.set_yticks(c[2])
+
+    fig.colorbar(c[3], ax=ax)
+    plt.show()
