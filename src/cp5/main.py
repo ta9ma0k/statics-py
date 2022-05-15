@@ -20,6 +20,10 @@ class ProbabilityDistribution:
         return dict(zip(self.x_set, self.prob))
 
 
+def e(x: np.ndarray, pd: ProbabilityDistribution, g=lambda x: x) -> float:
+    return np.sum([g(x_k) * pd.f(x_k) for x_k in x])
+
+
 def show_hist(pd: ProbabilityDistribution):
     fig = plt.figure(figsize=(10, 6))
     ax = fig.add_subplot(111)
@@ -39,3 +43,7 @@ if __name__ == '__main__':
     print('累積分布関数')
     print(f'F(3) = {pd.cdf(3)}')
 
+    print('期待値')
+    print(e(pd.x_set, pd))
+    print(e(pd.x_set, pd, g=lambda x: 2 * x + 3))
+    print(2 * e(pd.x_set, pd) + 3)
