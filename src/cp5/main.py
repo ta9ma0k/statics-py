@@ -31,6 +31,12 @@ class JointProbabilityDistribution:
             return y * (x - y) / 441
         return 0
 
+    def f_x(self, x: int) -> float:
+        return np.sum([self.f(x, y_k) for y_k in self.y_set])
+
+    def f_y(self, y: int) -> float:
+        return np.sum([self.f(x_k, y) for x_k in self.x_set])
+
 
 def e(x: np.ndarray, pd: ProbabilityDistribution, g=lambda x: x) -> float:
     return np.sum([g(x_k) * pd.f(x_k) for x_k in x])
@@ -89,3 +95,23 @@ if __name__ == '__main__':
     print('同時確率分布')
     print(f'fx(x) > 0 : {np.all(jpd.prob >= 0)}')
     print(f'sum f(x) = 1 : {np.sum(jpd.prob)}')
+
+    prob_x = np.array([jpd.f_x(x_k) for x_k in jpd.x_set])
+    prob_y = np.array([jpd.f_y(y_k) for y_k in jpd.y_set])
+    fig = plt.figure(figsize=(12, 4))
+    ax1 = fig.add_subplot(121)
+    ax2 = fig.add_subplot(122)
+
+    ax1.bar(jpd.x_set, prob_x)
+    ax1.set_title('x')
+    ax1.set_xlabel('x value')
+    ax1.set_ylabel('prob')
+    ax1.set_xticks(jpd.x_set)
+
+    ax2.bar(jpd.y_set, prob_y)
+    ax2.set_title('y')
+    ax2.set_xlabel('y value')
+    ax2.set_ylabel('prob')
+    ax2.set_xticks(jpd.y_set)
+
+    plt.show()
