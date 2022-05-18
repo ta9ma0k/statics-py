@@ -25,8 +25,8 @@ def check_prob(x: ProbSet):
     assert np.all(prob >= 0), '負の確率があります'
     prob_sum = np.round(np.sum(prob), 6)
     assert prob_sum == 1, f'確率の和が{prob_sum}になりました'
-    print(f'期待値は{E(X):.4}')
-    print(f'分散は{V(X):.4}')
+    print(f'期待値は{E(x):.4}')
+    print(f'分散は{V(x):.4}')
 
 
 def plot_prob(x: ProbSet):
