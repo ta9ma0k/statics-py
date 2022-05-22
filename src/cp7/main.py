@@ -1,3 +1,6 @@
+import warnings
+from functools import partial
+
 import matplotlib.pyplot as plt
 import numpy as np
 from scipy import integrate
@@ -44,6 +47,8 @@ def show_cdf(x_range, f):
     plt.show()
 
 
+warnings.filterwarnings('ignore', category=integrate.IntegrationWarning)
+
 if __name__ == '__main__':
     x_range = np.array([0, 1])
 
@@ -83,8 +88,72 @@ if __name__ == '__main__':
         return integrate.quad(g, -np.inf, y)[0]
 
 
-    def integrand(x):
-        return x * f(x)
+    def E(X, g=lambda x: x):
+        x_range, f = X
+
+        def integrand(x):
+            return g(x) * f(x)
+
+        return integrate.quad(integrand, -np.inf, np.inf)[0]
 
 
-    print(f'期待値 = {integrate.quad(integrand, -np.inf, np.inf)[0]}')
+    def V(X, g=lambda x: x):
+        x_range, f = X
+        mean = E(X, g)
+
+        def integrand(x):
+            return (g(x) - mean) ** 2 * f(x)
+
+        return integrate.quad(integrand, -np.inf, np.inf)[0]
+
+
+    x_range = [0, 2]
+    y_range = [0, 1]
+
+
+    def f_xy(x, y):
+        if 0 <= y <= 1 and 0 <= x - y <= 1:
+            return 4 * y * (x - y)
+        return 0
+
+
+    XY = [x_range, y_range, f_xy]
+
+
+    def f_X(x):
+        return integrate.quad(partial(f_xy, x), -np.inf, np.inf)[0]
+
+
+    def f_Y(y):
+        return integrate.quad(partial(f_xy, y=y), -np.inf, np.inf)[0]
+
+
+    def E(XY, g):
+        x_range, y_range, f_xy = XY
+
+        def integrand(x, y):
+            return g(x, y) * f_xy(x, y)
+
+        return integrate.nquad(integrand, [[-np.inf, np.inf], [-np.inf, np.inf]])[0]
+
+
+    def V(XY, g):
+        x_range, y_range, f_xy = XY
+        mean = E(XY, g)
+
+        def integrand(x, y):
+            return (g(x, y) - mean) ** 2 * f_xy(x, y)
+
+        return integrate.nquad(integrand, [[-np.inf, np.inf], [-np.inf, np.inf]])[0]
+
+
+    def Cov(XY):
+        x_range, y_range, f_xy = XY
+        mean_X = E(XY, lambda x, y: x)
+        mean_Y = E(XY, lambda x, y: y)
+
+        def integrand(x, y):
+            return (x - mean_X) * (y - mean_Y) * f_xy(x, y)
+
+        return integrate.nquad(integrand, [[-np.inf, np.inf], [-np.inf, np.inf]])[0]
+
