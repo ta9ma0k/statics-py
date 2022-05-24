@@ -63,8 +63,19 @@ def N(mu, sigma):
     return x_range, f
 
 
+def Ex(lam):
+    x_range = [0, np.inf]
+
+    def f(x):
+        if x > 0:
+            return lam * np.exp(-lam * x)
+        return 0
+
+    return x_range, f
+
+
 if __name__ == '__main__':
-    mu, sigma = 2, 0.5
-    X = N(mu, sigma)
+    lam = 3
+    X = Ex(lam)
     check_prob(X)
-    plot_prob(X, 0, 4)
+    plot_prob(X, 0, 2)
