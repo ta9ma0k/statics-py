@@ -121,3 +121,69 @@ if __name__ == '__main__':
         ax.set_xticks(np.arange(20))
         plt.show()
 
+
+    def show_sum_bernoulli():
+        p = 0.3
+        rv = stats.bernoulli(p)
+        sample_size = int(1e6)
+        xs_sample = rv.rvs(((10, sample_size)))
+        sum_sample = np.sum(xs_sample, axis=0)
+
+        print('X-Bern(0.3)のときのsigma 10 (i=1) Xiの期待値、分散')
+        print(np.mean(sum_sample), np.var(sum_sample))
+
+        fig = plt.figure(figsize=(10, 6))
+        ax = fig.add_subplot(111)
+
+        rv = stats.binom(10, p)
+        xs = np.arange(10)
+        hist, _ = np.histogram(sum_sample, bins=10, range=(0, 10), normed=True)
+        ax.bar(xs, hist, alpha=0.5, label='10個のBern(0.3)の和')
+        ax.plot(xs, rv.pmf(xs), label='Bin(10, 0.3)')
+        ax.legend()
+        ax.set_xlim(-0.5, 10)
+        ax.set_xticks(np.arange(10))
+        plt.show()
+
+
+    def show_mean_average_norm():
+        mean = 1
+        var = 2
+        rv = stats.norm(mean, np.sqrt(var))
+
+        n = 10
+        sample_size = int(1e6)
+        xs_sample = rv.rvs((n, sample_size))
+        sample_mean = np.mean(xs_sample, axis=0)
+
+        print(np.mean(sample_mean), np.var(sample_mean))
+
+        fig = plt.figure(figsize=(10, 6))
+        ax = fig.add_subplot(111)
+
+        rv_true = stats.norm(mean, np.sqrt(var / n))
+        xs = np.linspace(rv_true.isf(0.999), rv_true.isf(0.001), 100)
+        ax.hist(sample_mean, bins=100, density=True, alpha=0.5, label='n=10,N(1, 2) sample average')
+        ax.plot(xs, rv_true.pdf(xs), label='N(1, 2)', color='gray')
+        ax.legend()
+        ax.set_xlim(rv_true.isf(0.999), rv_true.isf(0.001))
+        plt.show()
+
+    def show_mean_average_poi():
+        l = 3
+        rv = stats.poisson(l)
+
+        n = 10
+        sample_size = int(1e6)
+        xs_sample = rv.rvs((n, sample_size))
+        sample_mean = np.mean(xs_sample, axis=0)
+
+        print(np.mean(sample_mean), np.var(sample_mean))
+
+        fig = plt.figure(figsize=(10, 6))
+        ax = fig.add_subplot(111)
+
+        ax.hist(sample_mean, bins=100, density=True, alpha=0.5, label='n=10, Poi(3) mean average')
+        ax.legend()
+        ax.set_xlim(0, 6)
+        plt.show()
