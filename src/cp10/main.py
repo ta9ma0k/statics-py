@@ -36,8 +36,22 @@ if __name__ == '__main__':
     n_samples = 10000
     samples = np.random.choice(scores, (n_samples, n))
 
+    for i in range(5):
+        print(f'{i+1}回目の標本平均: {np.mean(samples[i]):.3f}')
     sample_means = np.mean(samples, axis=1)
-    print('標本平均の平均')
+    print('標本平均の平均　不偏性')
     print(np.mean(sample_means))
-    print('サンプルサイズを１万にしたときの標本平均')
+    print('サンプルサイズを１万にしたときの標本平均　一致性')
     print(np.mean(np.random.choice(scores, int(1e6))))
+
+    for i in range(5):
+        print(f'{i + 1}回目の標本分散: {np.var(samples[i]):.3f}')
+    sample_vars = np.var(samples, axis=1)
+    print('標本分散の平均')
+    print(np.mean(sample_vars))
+
+    sample_u_vars = np.var(samples, axis=1, ddof=1)
+    print('不偏分散の平均 不偏性')
+    print(np.mean(sample_u_vars))
+    print('サンプルサイズを１万にしたときの不偏分散 一致性')
+    print(np.var(np.random.choice(scores, int(1e6)), ddof=1))
