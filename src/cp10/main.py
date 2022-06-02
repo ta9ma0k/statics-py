@@ -31,13 +31,14 @@ if __name__ == '__main__':
     np.random.seed(0)
     n = 20
     sample = np.random.choice(scores, n)
+    s_mean = np.mean(sample)
 
     np.random.seed(1111)
     n_samples = 10000
     samples = np.random.choice(scores, (n_samples, n))
 
     for i in range(5):
-        print(f'{i+1}回目の標本平均: {np.mean(samples[i]):.3f}')
+        print(f'{i + 1}回目の標本平均: {np.mean(samples[i]):.3f}')
     sample_means = np.mean(samples, axis=1)
     print('標本平均の平均　不偏性')
     print(np.mean(sample_means))
@@ -55,3 +56,42 @@ if __name__ == '__main__':
     print(np.mean(sample_u_vars))
     print('サンプルサイズを１万にしたときの不偏分散 一致性')
     print(np.var(np.random.choice(scores, int(1e6)), ddof=1))
+
+    rv = stats.norm()
+    lcl = s_mean - rv.isf(0.025) * np.sqrt(p_var / n)
+    ucl = s_mean - rv.isf(0.975) * np.sqrt(p_var / n)
+    print('95% confidence interval')
+    print(lcl, ucl)
+
+    def show_ci():
+        fig = plt.figure(figsize=(10, 10))
+        ax = fig.add_subplot(111)
+
+        rv = stats.norm()
+        n_samples = 20
+        ax.vlines(p_mean, 0, 21)
+        for i in range(n_samples):
+            sample_ = samples[i]
+            s_mean_ = np.mean(sample_)
+            lcl = s_mean_ - rv.isf(0.025) * np.sqrt(p_var / n)
+            ucl = s_mean_ - rv.isf(0.975) * np.sqrt(p_var / n)
+
+            if lcl <= p_mean <= ucl:
+                ax.scatter(s_mean_, n_samples-i, color='gray')
+                ax.hlines(n_samples-i, lcl, ucl, color='gray')
+            else:
+                ax.scatter(s_mean_, n_samples-i, color='b')
+                ax.hlines(n_samples-i, lcl, ucl, color='b')
+            ax.set_xticks([p_mean])
+            ax.set_xticklabels(['母平均'])
+        plt.show()
+
+    rv = stats.norm()
+    cnt = 0
+    for sample_ in samples:
+        s_mean_ = np.mean(sample_)
+        lcl = s_mean_ - rv.isf(0.025) * np.sqrt(p_var/ n)
+        ucl = s_mean_ - rv.isf(0.975) * np.sqrt(p_var / n)
+        if lcl <= p_mean <= ucl:
+            cnt += 1
+    print(cnt / len(samples))
