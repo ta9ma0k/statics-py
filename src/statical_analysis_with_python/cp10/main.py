@@ -6,7 +6,7 @@ from scipy import stats
 pd.options.display.precision = 3
 
 if __name__ == '__main__':
-    df = pd.read_csv("../../data/ch4_scores400.csv")
+    df = pd.read_csv("../../../data/ch4_scores400.csv")
     scores = np.array(df['点数'])
 
     p_mean = np.mean(scores)
@@ -32,6 +32,7 @@ if __name__ == '__main__':
     n = 20
     sample = np.random.choice(scores, n)
     s_mean = np.mean(sample)
+    u_var = np.var(sample, ddof=1)
 
     np.random.seed(1111)
     n_samples = 10000
@@ -63,6 +64,7 @@ if __name__ == '__main__':
     print('95% confidence interval')
     print(lcl, ucl)
 
+
     def show_ci():
         fig = plt.figure(figsize=(10, 10))
         ax = fig.add_subplot(111)
@@ -77,21 +79,76 @@ if __name__ == '__main__':
             ucl = s_mean_ - rv.isf(0.975) * np.sqrt(p_var / n)
 
             if lcl <= p_mean <= ucl:
-                ax.scatter(s_mean_, n_samples-i, color='gray')
-                ax.hlines(n_samples-i, lcl, ucl, color='gray')
+                ax.scatter(s_mean_, n_samples - i, color='gray')
+                ax.hlines(n_samples - i, lcl, ucl, color='gray')
             else:
-                ax.scatter(s_mean_, n_samples-i, color='b')
-                ax.hlines(n_samples-i, lcl, ucl, color='b')
+                ax.scatter(s_mean_, n_samples - i, color='b')
+                ax.hlines(n_samples - i, lcl, ucl, color='b')
             ax.set_xticks([p_mean])
             ax.set_xticklabels(['母平均'])
         plt.show()
+
 
     rv = stats.norm()
     cnt = 0
     for sample_ in samples:
         s_mean_ = np.mean(sample_)
-        lcl = s_mean_ - rv.isf(0.025) * np.sqrt(p_var/ n)
+        lcl = s_mean_ - rv.isf(0.025) * np.sqrt(p_var / n)
         ucl = s_mean_ - rv.isf(0.975) * np.sqrt(p_var / n)
         if lcl <= p_mean <= ucl:
+            cnt += 1
+    print(cnt / len(samples))
+
+    sample_y = sample_u_vars * (n - 1) / p_var
+
+
+    def show_chi_dist():
+        fig = plt.figure(figsize=(10, 6))
+        ax = fig.add_subplot(111)
+
+        xs = np.linspace(0, 40, 100)
+        rv = stats.chi2(df=n - 1)
+        ax.plot(xs, rv.pdf(xs), color='gray')
+        hist, _, _ = ax.hist(sample_y, bins=100, range=(0, 40), density=True)
+
+        plt.show()
+
+
+    rv = stats.chi2(df=n - 1)
+    lcl = (n - 1) * u_var / rv.isf(0.025)
+    hcl = (n - 1) * u_var / rv.isf(0.975)
+
+    print(lcl, hcl)
+
+
+    def show_sample_var():
+        fig = plt.figure(figsize=(10, 6))
+        ax = fig.add_subplot(111)
+
+        rv = stats.chi2(df=n - 1)
+        n_samples = 20
+        ax.vlines(p_var, 0, 21)
+        for i in range(n_samples):
+            sample_ = samples[i]
+            u_var_ = np.var(sample_, ddof=1)
+            lcl = (n - 1) * u_var_ / rv.isf(0.025)
+            ucl = (n - 1) * u_var_ / rv.isf(0.975)
+            if lcl <= p_var <= ucl:
+                ax.scatter(u_var_, n_samples - i, color='gray')
+                ax.hlines(n_samples - i, lcl, ucl, 'gray')
+            else:
+                ax.scatter(u_var_, n_samples - i, color='b')
+                ax.hlines(n_samples - i, lcl, ucl, 'b')
+        ax.set_xticks([p_var])
+        ax.set_xticklabels(['bobunnsann'])
+        plt.show()
+
+    rv = stats.chi2(df=n-1)
+    cnt = 0
+    for sample_ in samples:
+        u_var_ = np.var(sample_, ddof=1)
+        lcl = (n-1) * u_var_ / rv.isf(0.025)
+        ucl = (n-1) * u_var_ / rv.isf(0.975)
+        if lcl <= p_var <= ucl:
             cnt += 1
     print(cnt / len(samples))
