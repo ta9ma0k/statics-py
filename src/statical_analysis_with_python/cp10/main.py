@@ -44,7 +44,7 @@ if __name__ == '__main__':
     print('標本平均の平均　不偏性')
     print(np.mean(sample_means))
     print('サンプルサイズを１万にしたときの標本平均　一致性')
-    print(np.mean(np.random.choice(scores, int(1e6))))
+    # print(np.mean(np.random.choice(scores, int(1e6))))
 
     for i in range(5):
         print(f'{i + 1}回目の標本分散: {np.var(samples[i]):.3f}')
@@ -56,7 +56,7 @@ if __name__ == '__main__':
     print('不偏分散の平均 不偏性')
     print(np.mean(sample_u_vars))
     print('サンプルサイズを１万にしたときの不偏分散 一致性')
-    print(np.var(np.random.choice(scores, int(1e6)), ddof=1))
+    # print(np.var(np.random.choice(scores, int(1e6)), ddof=1))
 
     rv = stats.norm()
     lcl = s_mean - rv.isf(0.025) * np.sqrt(p_var / n)
@@ -152,3 +152,9 @@ if __name__ == '__main__':
         if lcl <= p_var <= ucl:
             cnt += 1
     print(cnt / len(samples))
+
+    rv = stats.t(df=n-1)
+    lcl = s_mean - rv.isf(0.025) * np.sqrt(u_var/n)
+    ucl = s_mean - rv.isf(0.975) * np.sqrt(u_var/n)
+    print(lcl, ucl)
+    
