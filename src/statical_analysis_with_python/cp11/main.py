@@ -17,3 +17,12 @@ if __name__ == '__main__':
 
     rv = stats.norm(130, np.sqrt(9 / 14))
     print(rv.isf(0.95))
+
+    z = (s_mean - 130) / np.sqrt(9/14)
+    print(z)
+
+    rv = stats.norm()
+    print(rv.isf(0.95))
+
+    print(rv.cdf(z))       
+    
