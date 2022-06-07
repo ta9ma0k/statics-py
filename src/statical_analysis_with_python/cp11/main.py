@@ -25,4 +25,31 @@ if __name__ == '__main__':
     print(rv.isf(0.95))
 
     print(rv.cdf(z))       
-    
+    print(rv.cdf(z) * 2)
+
+    rv = stats.norm(130, 3)
+    c = stats.norm().isf(0.95)
+    n_samples = 1000
+    cnt = 0
+    for _ in range(n_samples):
+        sample_ = np.round(rv.rvs(14), 2)
+        s_mean_ = np.mean(sample_)
+        z = (s_mean_ - 130) / np.sqrt(9/14)
+        if z < c:
+            cnt += 1
+    print('第一種の過誤')
+    print(cnt/n_samples)
+
+    rv = stats.norm(128, 3)
+    c = stats.norm().isf(0.95)
+    n_samples = 1000
+    cnt = 0
+    for _ in range(n_samples):
+        sample_ = np.round(rv.rvs(14), 2)
+        s_mean_ = np.mean(sample_)
+        z = (s_mean_ - 130) / np.sqrt(9/14)
+        if z >= c:
+            cnt += 1
+    print('第二種の過誤')
+    print(cnt/n_samples)
+
