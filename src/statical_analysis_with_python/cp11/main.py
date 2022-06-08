@@ -53,3 +53,37 @@ if __name__ == '__main__':
     print('第二種の過誤')
     print(cnt/n_samples)
 
+    def pmean_test(sample, mean0, p_var, alpha=0.05):
+        s_mean = np.mean(sample)
+        n = len(sample)
+        rv = stats.norm()
+        interval = rv.interval(1 - alpha) 
+        
+        z = (s_mean - mean0) / np.sqrt(p_var/n)
+        if interval[0] <= z <= interval[1]:
+            print('帰無仮説を採択')
+        else:
+            print('帰無仮説を棄却')
+        if z < 0:
+            p = rv.cdf(z) * 2
+        else:
+            p = (1 - rv.cdf(z)) * 2
+        print(f'p value is {p:.3f}')
+
+    def pvar_test(sample, var0, alpha=0.05):
+        u_var = np.var(sample, ddof=1)
+        n = len(sample)
+        rv = stats.chi2(df=n-1)
+        interval = rv.interval(1-alpha)
+
+        y = (n-1) * u_var / var0
+        if interval[0] <= y <= interval[1]:
+             print('帰無仮説を採択')
+        else:
+            print('帰無仮説を棄却')
+        if y < rv.isf(0.05):
+            p = rv.cdf(y) * 2
+        else:
+            p = (1-rv.cdf(y)) * 2
+        print(f'p value is {p:.3f}')
+    pvar_test(sample, 9)
