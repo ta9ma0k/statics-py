@@ -86,4 +86,23 @@ if __name__ == '__main__':
         else:
             p = (1-rv.cdf(y)) * 2
         print(f'p value is {p:.3f}')
-    pvar_test(sample, 9)
+
+    def pmean_test(sample, mean0, alpha=0.05):
+        s_mean = np.mean(sample)
+        u_var = np.var(sample, ddof=1)
+        n = len(sample)
+        rv = stats.t(df=n-1)
+        interval = rv.interval(1-alpha)
+        
+        t = (s_mean - mean0) / np.sqrt(u_var/n)
+        if interval[0] <= t <= interval[1]:
+            print('帰無仮説を採択')
+        else:
+            print('帰無仮説を棄却')
+
+        if t < 0:
+            p = rv.cdf(t) * 2
+        else:
+            p = (1 - rv.cdf(t)) * 2
+        print(f'p value is {p:.3f}')
+    pmean_test(sample, 130)
