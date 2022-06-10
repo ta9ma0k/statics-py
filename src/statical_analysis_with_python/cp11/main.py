@@ -105,4 +105,13 @@ if __name__ == '__main__':
         else:
             p = (1 - rv.cdf(t)) * 2
         print(f'p value is {p:.3f}')
-    pmean_test(sample, 130)
+
+    training_rel = pd.read_csv('../../../data/ch11_training_rel.csv')
+    training_rel['差'] = training_rel['後'] - training_rel['前']
+
+    t, p = stats.ttest_1samp(training_rel['差'], 0)
+    print(f'p value = {p}')
+
+    training_ind = pd.read_csv('../../../data/ch11_training_ind.csv')
+    t, p = stats.ttest_ind(training_ind['A'], training_ind['B'], equal_var=False)
+    print(f'p value = {p}')
