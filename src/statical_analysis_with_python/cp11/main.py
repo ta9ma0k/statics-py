@@ -115,3 +115,10 @@ if __name__ == '__main__':
     training_ind = pd.read_csv('../../../data/ch11_training_ind.csv')
     t, p = stats.ttest_ind(training_ind['A'], training_ind['B'], equal_var=False)
     print(f'p value = {p}')
+
+    T, p = stats.wilcoxon(training_rel['前'], training_rel['後'])
+    print(f'p value={p}')
+
+    u, p = stats.mannwhitneyu(training_ind['A'], training_ind['B'], alternative='two-sided')
+    print(f'p value={p}')
+    
