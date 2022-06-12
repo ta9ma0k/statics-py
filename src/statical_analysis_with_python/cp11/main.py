@@ -122,3 +122,24 @@ if __name__ == '__main__':
     u, p = stats.mannwhitneyu(training_ind['A'], training_ind['B'], alternative='two-sided')
     print(f'p value={p}')
     
+    ad_df = pd.read_csv('../../../data/ch11_ad.csv')
+    n = len(ad_df)
+    print(n)
+    print(ad_df.head())
+
+    ad_cross = pd.crosstab(ad_df['広告'], ad_df['購入'])
+    print(ad_cross)
+
+    print(ad_cross['した'] / (ad_cross['した'] + ad_cross['しなかった']))
+
+    n_yes, n_not = ad_cross.sum()
+    n_adA, n_adB = ad_cross.sum(axis=1)
+    ad_ef = pd.DataFrame({'した': [n_adA * n_yes / n, n_adB * n_yes / n], 
+        'しなかった': [n_adA * n_not /n, n_adB * n_not / n]}, index=['A', 'B'])
+    print(ad_ef)
+    print(ad_cross - ad_ef)
+    y = ((ad_cross - ad_ef) ** 2 / ad_ef).sum().sum()
+    print(y)
+
+    rv = stats.chi2(1)
+    print(1 - rv.cdf(y))
