@@ -19,11 +19,25 @@ if __name__ == '__main__':
     xs = np.linspace(x.min(), x.max())
     ys = poly_1d(xs)
 
-    fig = plt.figure(figsize=(10, 6))
-    ax = fig.add_subplot(111)
-    ax.set_xlabel('小テスト')
-    ax.set_ylabel('期末テスト')
-    ax.plot(xs, ys, color='gray', label=f'{poly_fit[1]:.2f}+{poly_fit[0]:.2f}x')
-    ax.scatter(x, y)
-    ax.legend()
-    plt.show()
+   # fig = plt.figure(figsize=(10, 6))
+   # ax = fig.add_subplot(111)
+   # ax.set_xlabel('小テスト')
+   # ax.set_ylabel('期末テスト')
+   # ax.plot(xs, ys, color='gray', label=f'{poly_fit[1]:.2f}+{poly_fit[0]:.2f}x')
+   # ax.scatter(x, y)
+   # ax.legend()
+   # plt.show()
+
+    formula = '期末テスト ~ 小テスト'
+    result = smf.ols(formula, df).fit()
+    print(result.summary())
+
+    X = np.array([np.ones_like(x), x]).T
+    beta0_hat, beta1_hat = np.linalg.lstsq(X, y, rcond=1)[0]
+    print(f'beta0={beta0_hat}, beta1={beta1_hat}')
+    
+    y_hat = beta0_hat + beta1_hat * x
+    eps_hat = y - y_hat
+    s_var = np.var(eps_hat, ddof=p+1)
+    print(f's_var={s_var}')
+
