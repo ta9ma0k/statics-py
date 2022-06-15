@@ -41,3 +41,23 @@ if __name__ == '__main__':
     s_var = np.var(eps_hat, ddof=p+1)
     print(f's_var={s_var}')
 
+    C0, C1 = np.diag(np.linalg.pinv(np.dot(X.T, X)))
+    print(np.sqrt(s_var * C0), np.sqrt(s_var * C1))
+
+    rv = stats.t(n - 2)
+    lcl = beta0_hat - rv.isf(0.025) * np.sqrt(s_var * C0)
+    hcl = beta0_hat - rv.isf(0.975) * np.sqrt(s_var * C0)
+    print(lcl, hcl)
+
+    rv = stats.t(n - 2)
+    lcl = beta1_hat - rv.isf(0.025) * np.sqrt(s_var * C1)
+    hcl = beta1_hat - rv.isf(0.975) * np.sqrt(s_var * C1)
+    print(lcl, hcl)
+
+    t = beta1_hat / np.sqrt(s_var * C1)
+    print(t)
+    print(1 - rv.cdf(t) * 2)
+
+    t = beta0_hat / np.sqrt(s_var * C0)
+    print(t)
+    print(1 - rv.cdf(t) * 2)
