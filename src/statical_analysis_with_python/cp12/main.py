@@ -61,3 +61,26 @@ if __name__ == '__main__':
     t = beta0_hat / np.sqrt(s_var * C0)
     print(t)
     print(1 - rv.cdf(t) * 2)
+
+    print('-' * 20)
+    formula = '期末テスト ~ 小テスト + 睡眠時間'
+    result = smf.ols(formula, df).fit()
+    print(result.summary())
+
+    x1 = df['小テスト']
+    x2 = df['睡眠時間']
+    y = df['期末テスト']
+    p = 2
+
+    X = np.array([np.ones_like(x1), x1, x2]).T
+    beta0_hat , beta1_hat, beta2_hat = np.linalg.lstsq(X, y, rcond=1)[0]
+    print(beta0_hat, beta1_hat, beta2_hat)
+
+    y_hat = beta0_hat + beta1_hat * x1 + beta2_hat * x2
+    eps_hat = y - y_hat
+    s_var = np.sum(eps_hat ** 2) / (n - p - 1)
+    C0, C1, C2 = np.diag(np.linalg.pinv(np.dot(X.T, X)))
+    rv = stats.t(n - p - 1)
+    lcl = beta2_hat - rv.isf(0.025) * np.sqrt(s_var * C2)
+    hcl = beta2_hat - rv.isf(0.975) * np.sqrt(s_var * C2)
+    print(lcl, hcl)
