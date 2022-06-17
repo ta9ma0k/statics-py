@@ -62,7 +62,22 @@ if __name__ == '__main__':
     print(t)
     print(1 - rv.cdf(t) * 2)
 
-    print('-' * 20)
+    print(np.sum(eps_hat ** 2))
+    total_var = np.sum((y - np.mean(y)) ** 2)
+    exp_var = np.sum((y_hat - np.mean(y)) ** 2)
+    unexp_var = np.sum(eps_hat ** 2)
+    print(total_var, exp_var + unexp_var)
+    print(exp_var / total_var)
+    print(np.corrcoef(x, y)[0, 1] ** 2)
+
+    print(1 - (unexp_var / (n - p - 1)) / ( total_var / (n - 1) ))
+
+    f = (exp_var / p) / (unexp_var / (n - p -1))
+    print(f)
+    rv = stats.f(p, n-p-1)
+    print(1 - rv.cdf(f))
+
+    print('#' * 40)
     formula = '期末テスト ~ 小テスト + 睡眠時間'
     result = smf.ols(formula, df).fit()
     print(result.summary())
@@ -84,3 +99,10 @@ if __name__ == '__main__':
     lcl = beta2_hat - rv.isf(0.025) * np.sqrt(s_var * C2)
     hcl = beta2_hat - rv.isf(0.975) * np.sqrt(s_var * C2)
     print(lcl, hcl)
+    
+    print('#' * 40)
+    formula = '期末テスト ~ 小テスト + 睡眠時間 + 通学方法'
+    result = smf.ols(formula, df).fit()
+    print(result.summary())
+
+
