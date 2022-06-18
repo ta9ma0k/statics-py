@@ -77,6 +77,16 @@ if __name__ == '__main__':
     rv = stats.f(p, n-p-1)
     print(1 - rv.cdf(f))
 
+    rv = stats.norm(y_hat, np.sqrt(unexp_var / n))
+    mll = np.sum(np.log(rv.pdf(y)))
+    print(mll)
+
+    aic = -2 * mll + 2 * (p + 1)
+    print(aic)
+
+    bic = -2 * mll + np.log(n) * (p + 1)
+    print(bic)
+
     print('#' * 40)
     formula = '期末テスト ~ 小テスト + 睡眠時間'
     result = smf.ols(formula, df).fit()
@@ -105,4 +115,4 @@ if __name__ == '__main__':
     result = smf.ols(formula, df).fit()
     print(result.summary())
 
-
+    
